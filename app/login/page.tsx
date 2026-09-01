@@ -56,6 +56,14 @@ export default function LoginPage() {
 
         {/* Form */}
         <div className="card" style={{ padding: '32px' }}>
+          {!process.env.NEXT_PUBLIC_SUPABASE_URL && (
+            <div className="alert alert-warning" style={{ marginBottom: '20px', fontSize: '13px' }}>
+              <span>⚠️</span>
+              <div>
+                <strong>Setup required:</strong> Supabase credentials are not set in <code>.env.local</code>. Please copy <code>.env.example</code> to <code>.env.local</code> and add your project URL and keys.
+              </div>
+            </div>
+          )}
           <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             <div>
               <label className="label" htmlFor="email">Email address</label>

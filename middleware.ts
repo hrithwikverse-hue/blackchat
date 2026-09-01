@@ -37,11 +37,25 @@ export async function middleware(request: NextRequest) {
   // Check for API routes — return 401 instead of redirect for non-webhook APIs
   const isApiRoute = pathname.startsWith('/api/')
 
+  // Check if Supabase credentials are configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    if (pathname === '/login') {
+      return NextResponse.next()
+    }
+    if (isApiRoute) {
+      return NextResponse.json({ error: 'Supabase credentials not configured in .env.local' }, { status: 500 })
+    }
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
